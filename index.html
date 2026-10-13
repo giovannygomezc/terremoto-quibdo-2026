@@ -90,6 +90,15 @@ button:focus-visible,select:focus-visible,input:focus-visible,.bar-row:focus-vis
 .leaflet-tooltip-top:before{border-top-color:var(--surface)}
 .leaflet-control-zoom a{background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
 .leaflet-bar{border:1px solid var(--line)!important;box-shadow:none!important}
+.op-ctl{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:12px;display:flex;flex-direction:column;gap:2px}
+.op-ctl input{width:130px;accent-color:var(--accent)}
+.leaflet-control-layers{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:none!important;font-size:13px}
+.leaflet-control-layers-toggle{width:auto!important;height:auto!important;background:none!important;padding:7px 11px;text-decoration:none;color:var(--ink)!important;font-size:12.5px;font-weight:600;display:block}
+.leaflet-control-layers-toggle::after{content:"Mapas base y capas ▾"}
+.leaflet-control-layers-expanded{padding:8px 12px 8px 8px}
+.leaflet-control-layers-base label,.leaflet-control-layers-overlays label{margin:2px 0}
+.leaflet-control-scale-line{background:var(--surface);color:var(--ink);border-color:var(--ink-2)}
+.leaflet-control-attribution{background:var(--surface)!important;color:var(--muted)!important;font-size:10px}
 .epi-icon{color:var(--accent);font-size:26px;line-height:26px;text-align:center;text-shadow:0 0 0 var(--surface),0 0 3px var(--surface),0 0 6px var(--surface)}
 .ring-lbl{font-family:var(--f-data);font-size:11px;color:var(--accent-ink);background:transparent;border:0;box-shadow:none;padding:0}
 .ring-lbl:before{display:none}
@@ -228,7 +237,7 @@ footer a{color:var(--ink-2)}
       <div id="map" role="region" aria-label="Mapa de municipios afectados"></div>
       <div class="legend">
         <div class="ramp" id="ramp"></div>
-        <span class="lg-item"><span class="sw"></span>Sin registro</span>
+        <span class="lg-item"><span class="sw" style="background:transparent"></span>Sin registro (sin relleno)</span>
         <span class="lg-item"><span style="color:var(--accent);font-size:16px">★</span>Epicentro</span>
         <span class="lg-item"><span style="display:inline-block;width:16px;height:0;border-top:2.5px solid var(--hl)"></span>Quibdó</span>
       </div>
@@ -370,20 +379,53 @@ function drawSeis() {
 }
 
 /* ---------- Mapa ---------- */
-const map = L.map('map', { zoomControl: true, attributionControl: false, preferCanvas: false, zoomSnap: .25 });
+const map = L.map('map', { zoomControl: true, attributionControl: true, zoomSnap: .25 });
+map.attributionControl.setPrefix(false);
 map.fitBounds([[1.6, -78.4], [7.6, -73.6]]);
-let mpioLayer, dptoLayer, rings = [], qLayer;
+map.createPane('labels'); map.getPane('labels').style.zIndex = 450; map.getPane('labels').style.pointerEvents = 'none';
+L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+
+/* Mapas base (como la galería de ArcGIS Pro) */
+const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+const esri = (svc, opts = {}) => L.tileLayer(ESRI + svc + '/MapServer/tile/{z}/{y}/{x}', Object.assign({ maxZoom: 16, attribution: 'Esri' }, opts));
+const lbl = svc => esri(svc, { pane: 'labels', attribution: '' });
+const BASES = {
+  'Gris claro (Esri)': L.layerGroup([esri('Canvas/World_Light_Gray_Base', { attribution: 'Esri, HERE, Garmin' }), lbl('Canvas/World_Light_Gray_Reference')]),
+  'Gris oscuro (Esri)': L.layerGroup([esri('Canvas/World_Dark_Gray_Base', { attribution: 'Esri, HERE, Garmin' }), lbl('Canvas/World_Dark_Gray_Reference')]),
+  'Imágenes satelitales (Esri)': L.layerGroup([esri('World_Imagery', { attribution: 'Esri, Maxar, Earthstar Geographics' }), lbl('Reference/World_Boundaries_and_Places')]),
+  'Topográfico (Esri)': esri('World_Topo_Map', { attribution: 'Esri, HERE, Garmin, USGS' }),
+  'Calles (OpenStreetMap)': L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }),
+  'Sin mapa base': L.layerGroup()
+};
+let baseName = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Gris oscuro (Esri)' : 'Gris claro (Esri)';
+BASES[baseName].addTo(map);
+map.on('baselayerchange', e => { baseName = e.name; mpioLayer && mpioLayer.setStyle(styleMpio); });
+const hasBase = () => baseName !== 'Sin mapa base';
+
+const gMun = L.layerGroup().addTo(map), gDep = L.layerGroup().addTo(map), gRings = L.layerGroup().addTo(map), gQ = L.layerGroup().addTo(map);
+L.control.layers(BASES, { 'Municipios (damnificados)': gMun, 'Límites departamentales': gDep, 'Epicentro y anillos': gRings, 'Quibdó': gQ }, { position: 'topright', collapsed: true }).addTo(map);
+
+/* Control de transparencia de la capa de municipios */
+let opac = .75;
+const OpCtl = L.Control.extend({ options: { position: 'topright' }, onAdd() {
+  const d = L.DomUtil.create('div', 'op-ctl');
+  d.innerHTML = '<label for="op">Opacidad municipios</label><input type="range" id="op" min="20" max="100" step="5" value="75">';
+  L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+  d.querySelector('input').addEventListener('input', e => { opac = e.target.value / 100; mpioLayer && mpioLayer.setStyle(styleMpio); });
+  return d; } });
+map.addControl(new OpCtl());
+
+let mpioLayer;
 function styleMpio(f) {
   const d = byCod[f.properties.c];
   const dim = state.dep && (!d || d.dep !== state.dep);
-  if (!d) return { fillColor: css('--nodata'), fillOpacity: dim ? .35 : 1, color: css('--nodata-line'), weight: .4 };
-  return { fillColor: colorFor(val(d)), fillOpacity: dim ? .25 : .95, color: css('--surface'), weight: .5 };
+  const base = hasBase();
+  if (!d) return { fillColor: css('--nodata'), fillOpacity: base ? 0 : (dim ? .35 : 1), color: base ? css('--muted') : css('--nodata-line'), weight: base ? .3 : .4, opacity: base ? .5 : 1 };
+  const o = base ? opac : Math.max(opac, .95);
+  return { fillColor: colorFor(val(d)), fillOpacity: dim ? o * .3 : o, color: base ? '#ffffff' : css('--surface'), weight: .5, opacity: base ? .6 : 1 };
 }
 function buildMap() {
-  if (mpioLayer) map.removeLayer(mpioLayer);
-  if (dptoLayer) map.removeLayer(dptoLayer);
-  rings.forEach(r => map.removeLayer(r)); rings = [];
-  if (qLayer) map.removeLayer(qLayer);
+  gMun.clearLayers(); gDep.clearLayers(); gRings.clearLayers(); gQ.clearLayers();
   mpioLayer = L.geoJSON(MPIO, {
     style: styleMpio,
     onEachFeature: (f, l) => {
@@ -392,21 +434,19 @@ function buildMap() {
         ? `<strong>${d.mun}</strong> · ${d.dep}<br>${fmt(d.dam)} damnificados · ${fmt1(d.rel)} por 1.000 hab.`
         : `<strong>${f.properties.n}</strong> · ${f.properties.d}<br>Sin registro en el RUD`, { sticky: true, direction: 'top' });
       l.on('click', () => d ? showDetail(d) : null);
-      l.on('mouseover', () => l.setStyle({ weight: 2, color: css('--ink') }));
+      l.on('mouseover', () => l.setStyle({ weight: 2, color: css('--ink'), opacity: 1 }));
       l.on('mouseout', () => { mpioLayer.resetStyle(l); });
     }
-  }).addTo(map);
-  dptoLayer = L.geoJSON(DPTO, { style: { fill: false, color: css('--dep-line'), weight: 1, opacity: .7 }, interactive: false }).addTo(map);
-  qLayer = L.geoJSON(MPIO.features.find(f => f.properties.c === QCOD), { style: { fill: false, color: css('--hl'), weight: 3 }, interactive: false }).addTo(map);
+  }).addTo(gMun);
+  L.geoJSON(DPTO, { style: { fill: false, color: css('--dep-line'), weight: 1.2, opacity: .8 }, interactive: false }).addTo(gDep);
+  L.geoJSON(MPIO.features.find(f => f.properties.c === QCOD), { style: { fill: false, color: css('--hl'), weight: 3 }, interactive: false }).addTo(gQ);
   [50, 100, 200].forEach(km => {
-    const c = L.circle(EPI, { radius: km * 1000, color: css('--ring'), weight: 1.2, dashArray: '4 5', fill: false, interactive: false }).addTo(map);
-    const lbl = L.tooltip({ permanent: true, direction: 'center', className: 'ring-lbl' })
-      .setLatLng([EPI[0] + km / 111.2, EPI[1]]).setContent(km + ' km');
-    map.addLayer(lbl); rings.push(c, lbl);
+    L.circle(EPI, { radius: km * 1000, color: css('--ring'), weight: 1.4, dashArray: '4 5', fill: false, interactive: false }).addTo(gRings);
+    L.tooltip({ permanent: true, direction: 'center', className: 'ring-lbl' })
+      .setLatLng([EPI[0] + km / 111.2, EPI[1]]).setContent(km + ' km').addTo(gRings);
   });
-  const epi = L.marker(EPI, { icon: L.divIcon({ className: 'epi-icon', html: '★', iconSize: [26, 26], iconAnchor: [13, 13] }), keyboard: false })
-    .bindTooltip('Epicentro · San José del Palmar<br>M 7,4 · 116 km de profundidad', { direction: 'top' }).addTo(map);
-  rings.push(epi);
+  L.marker(EPI, { icon: L.divIcon({ className: 'epi-icon', html: '★', iconSize: [26, 26], iconAnchor: [13, 13] }), keyboard: false })
+    .bindTooltip('Epicentro · San José del Palmar<br>M 7,4 · 116 km de profundidad', { direction: 'top' }).addTo(gRings);
 }
 function renderRamp() {
   const b = BREAKS[state.metric], r = ramp();
