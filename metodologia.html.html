@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Equipamientos Quibdó: documento técnico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: documento técnico de una columna con índice lateral en pantallas anchas */
+:root{
+  --bg:#f6f7f9; --paper:#ffffff; --ink:#18212b; --ink-2:#4a5866; --muted:#7b8794; --line:#dfe4ea;
+  --navy:#0b3a66; --navy-soft:#e8f0f8; --ok:#1a7f37; --warn:#9a5b00;
+  --c0:#5c5c5c; --c1:#d7191c; --c2:#fdae61; --c3:#ffffbf; --c4:#a6d96a; --c5:#1a9641;
+  --f-body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1418; --paper:#161d23; --ink:#e8edf2; --ink-2:#b5c0cb; --muted:#8693a0; --line:#2a343d;
+  --navy:#8fb8e6; --navy-soft:#1b2a39; --ok:#4cc26b; --warn:#e0a43c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1418; --paper:#161d23; --ink:#e8edf2; --ink-2:#b5c0cb; --muted:#8693a0; --line:#2a343d;
+  --navy:#8fb8e6; --navy-soft:#1b2a39; --ok:#4cc26b; --warn:#e0a43c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;margin:0}
+.layout{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 60px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;font-size:13.5px}
+nav.toc b{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+nav.toc a{display:block;color:var(--ink-2);text-decoration:none;padding:4px 0 4px 10px;border-left:2px solid var(--line)}
+nav.toc a:hover{color:var(--navy);border-left-color:var(--navy)}
+article{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:clamp(20px,4vw,48px);min-width:0}
+header.doc{border-bottom:3px solid var(--navy);padding-bottom:18px;margin-bottom:8px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(26px,3.4vw,36px);line-height:1.15;letter-spacing:-.015em;margin:8px 0 10px;text-wrap:balance;color:var(--ink)}
+h2{font-size:22px;margin:40px 0 10px;color:var(--navy);text-wrap:balance;scroll-margin-top:20px}
+h3{font-size:17px;margin:24px 0 6px;text-wrap:balance}
+p,li{max-width:72ch;color:var(--ink-2)}
+p strong,li strong{color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13.5px;color:var(--ink-2)}
+.meta span b{color:var(--ink)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--navy-soft);padding:1px 5px;border-radius:4px;word-break:break-word}
+.tbl{overflow-x:auto;margin:12px 0 4px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--navy-soft);color:var(--ink);font-size:12.5px;letter-spacing:.02em}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 0}
+.formula{font-family:var(--f-mono);background:var(--navy-soft);border-left:3px solid var(--navy);padding:12px 16px;border-radius:6px;margin:12px 0;overflow-x:auto;color:var(--ink)}
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.phase{border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+.phase .k{font-family:var(--f-mono);font-size:12px;color:var(--navy);font-weight:500}
+.phase h4{margin:2px 0 4px;font-size:15px}
+.phase p{font-size:13.5px;margin:0}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.25);vertical-align:-1px;margin-right:6px}
+ol.steps li{margin:6px 0}
+.note{border:1px solid var(--line);background:var(--navy-soft);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:14.5px;color:var(--ink-2)}
+.ok{color:var(--ok);font-weight:600}
+.refs li{font-size:14px;margin:6px 0}
+footer.doc{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;font-size:14px;color:var(--ink-2)}
+a{color:var(--navy)}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)} nav.toc{display:none} .phases{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Índice">
+  <b>Contenido</b>
+  <a href="#objetivo">1. Objetivo</a>
+  <a href="#area">2. Área de estudio</a>
+  <a href="#datos">3. Datos e insumos</a>
+  <a href="#fases">4. Metodología por fases</a>
+  <a href="#criterios">5. Criterios y puntajes</a>
+  <a href="#ahp">6. Ponderación AHP</a>
+  <a href="#modelo">7. Modelo de aptitud</a>
+  <a href="#validacion">8. Sitios y validación</a>
+  <a href="#manual">9. Manual de uso</a>
+  <a href="#capas">10. Capas propias</a>
+  <a href="#limitaciones">11. Limitaciones</a>
+  <a href="#referencias">12. Referencias</a>
+</nav>
+
+<article>
+<header class="doc">
+  <div class="eyebrow">Documento técnico · Metodología y manual de la aplicación</div>
+  <h1>Localización óptima de nuevos equipamientos de salud y educación en Quibdó tras el sismo del 10 de agosto de 2026</h1>
+  <div class="meta">
+    <span><b>Autor:</b> Giovanny Andrés Gómez Cabezas</span>
+    <span><b>Programa:</b> Especialización en SIG, Universidad Antonio Nariño</span>
+    <span><b>Curso:</b> Ingeniería Computacional Aplicada a la Geomática</span>
+    <span><b>Plataforma:</b> Google Earth Engine (JavaScript)</span>
+    <span><b>Versión:</b> octubre de 2026</span>
+  </div>
+</header>
+
+<h2 id="objetivo">1. Objetivo</h2>
+<p>La aplicación identifica las zonas más aptas para construir nuevos equipamientos de salud y educación en el municipio de Quibdó (Chocó), como apoyo a la reconstrucción tras el sismo de magnitud 7,4 del 10 de agosto de 2026. Combina seis criterios espaciales mediante una evaluación multicriterio con ponderación por el <strong>Proceso Analítico Jerárquico (AHP)</strong> y entrega un mapa de aptitud, los cinco sitios prioritarios y una estimación de la mejora en la cobertura de la población.</p>
+<p>Quibdó quedó en alerta roja tras el sismo, con 34.608 personas inscritas en el Registro Único de Damnificados, cerca de 241 por cada 1.000 habitantes, y el primer balance de Asocapitales reportó el colapso de 4 infraestructuras educativas y 2 de salud.</p>
+
+<h2 id="area">2. Área de estudio</h2>
+<p>El municipio de Quibdó, capital del Chocó, se ubica en la cuenca del río Atrato, una de las zonas más lluviosas y nubosas del mundo. El epicentro del sismo (4,860° N, 76,256° O; 116 km de profundidad) está a unos 100 km al sur del casco urbano. La aplicación permite trabajar en dos escalas:</p>
+<ul>
+  <li><strong>Casco urbano y zona de expansión</strong> (opción recomendada): círculo de 2 a 15 km de radio desde el centro de Quibdó, intersecado con el límite municipal. Se analiza a 30 m.</li>
+  <li><strong>Municipio completo</strong>: todo el límite municipal, analizado a 90 m para mantener tiempos de cálculo razonables.</li>
+</ul>
+<p>El límite municipal se toma, en este orden, de la capa propia del autor, de la capa DIVIPOLA del curso o de FAO GAUL nivel 2 como respaldo.</p>
+
+<h2 id="datos">3. Datos e insumos</h2>
+<div class="tbl"><table>
+<thead><tr><th>Insumo</th><th>Fuente (ID en Earth Engine)</th><th>Resolución</th><th>Uso en el modelo</th></tr></thead>
+<tbody>
+<tr><td>Modelo digital de elevación</td><td><code>NASA/NASADEM_HGT/001</code></td><td class="n">30 m</td><td>Pendiente (criterio y restricción)</td></tr>
+<tr><td>Altura sobre el drenaje (HAND)</td><td><code>MERIT/Hydro/v1_0_1</code> · banda <code>hnd</code></td><td class="n">90 m</td><td>Susceptibilidad a inundación</td></tr>
+<tr><td>Agua superficial 1984–2021</td><td><code>JRC/GSW1_4/GlobalSurfaceWater</code> · <code>occurrence</code></td><td class="n">30 m</td><td>Inundación y restricción</td></tr>
+<tr><td>Cobertura de la tierra 2021</td><td><code>ESA/WorldCover/v200</code></td><td class="n">10 m</td><td>Uso del suelo, restricción y zonas construidas</td></tr>
+<tr><td>Población 2020</td><td><code>WorldPop/GP/100m/pop</code></td><td class="n">100 m</td><td>Demanda (salud)</td></tr>
+<tr><td>Población por edad 2020</td><td><code>WorldPop/GP/100m/pop_age_sex</code> (5–19 años)</td><td class="n">100 m</td><td>Demanda (educación)</td></tr>
+<tr><td>Tiempo de viaje a ciudades</td><td><code>Oxford/MAP/accessibility_to_cities_2015_v1_0</code></td><td class="n">1 km</td><td>Accesibilidad (si no hay capa de vías)</td></tr>
+<tr><td>Áreas protegidas</td><td><code>WCMC/WDPA/current/polygons</code></td><td class="n">vector</td><td>Restricción</td></tr>
+<tr><td>Imagen de contexto</td><td><code>COPERNICUS/S2_SR_HARMONIZED</code> 2023–2025, máscara SCL</td><td class="n">10 m</td><td>Visualización</td></tr>
+<tr><td>Equipamientos de salud</td><td>REPS 2026 (Ministerio de Salud), asset propio</td><td class="n">puntos</td><td>Brecha de cobertura y validación</td></tr>
+<tr><td>Sedes educativas</td><td>DUE (Ministerio de Educación), asset propio</td><td class="n">puntos</td><td>Brecha de cobertura y validación</td></tr>
+<tr><td>Vías</td><td>Cartografía básica IGAC, asset propio</td><td class="n">vector</td><td>Accesibilidad vial</td></tr>
+</tbody></table></div>
+<p class="cap">Las tres últimas capas son opcionales. Si no están cargadas, la aplicación usa los respaldos descritos en la sección 5 y lo indica en el panel de la Fase 1.</p>
+
+<h2 id="fases">4. Metodología por fases</h2>
+<div class="phases">
+  <div class="phase"><div class="k">FASE 1</div><h4>Área e insumos</h4><p>Delimitación del área, carga y diagnóstico de los insumos del catálogo de Earth Engine.</p></div>
+  <div class="phase"><div class="k">FASE 2</div><h4>Diagnóstico de cobertura</h4><p>Población cubierta y sin cobertura por los equipamientos existentes.</p></div>
+  <div class="phase"><div class="k">FASE 3</div><h4>Criterios y AHP</h4><p>Puntaje 0–1 de seis criterios y pesos por AHP, con Fuzzy AHP como sensibilidad.</p></div>
+  <div class="phase"><div class="k">FASE 4</div><h4>Modelo de aptitud</h4><p>Suma lineal ponderada en escala 1–10, restricciones y cinco clases.</p></div>
+  <div class="phase"><div class="k">FASE 5</div><h4>Automatización</h4><p>Recálculo completo con cada parámetro y descarga de GeoTIFF y GeoJSON.</p></div>
+  <div class="phase"><div class="k">FASE 6</div><h4>Resultados y validación</h4><p>Cinco sitios prioritarios y mejora de la cobertura de la población.</p></div>
+</div>
+
+<h2 id="criterios">5. Criterios y funciones de puntaje</h2>
+<p>Cada criterio se transforma a un puntaje continuo entre 0 (menos apto) y 1 (más apto) para que todos sean comparables antes de ponderarlos.</p>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Criterio</th><th>Variable</th><th>Función de puntaje (0–1)</th></tr></thead>
+<tbody>
+<tr><td class="n">C1</td><td>Accesibilidad vial</td><td>Distancia a vías (capa propia) o tiempo a ciudades (Oxford MAP)</td><td>1 − d/3.000 m; o 1 − t/120 min</td></tr>
+<tr><td class="n">C2</td><td>Pendiente</td><td>Pendiente NASADEM (°)</td><td>1 − pendiente/pendiente máxima (15° por defecto)</td></tr>
+<tr><td class="n">C3</td><td>Seguridad frente a inundación</td><td>HAND (m) y ocurrencia de agua JRC (%)</td><td>[(HAND − 1)/14] × [1 − ocurrencia/20]</td></tr>
+<tr><td class="n">C4</td><td>Uso del suelo</td><td>Clase ESA WorldCover</td><td>Construido 1,0 · herbazal 0,8 · suelo desnudo 0,7 · cultivo y arbustal 0,6 · bosque 0,3 · agua, humedal y manglar 0</td></tr>
+<tr><td class="n">C5</td><td>Demanda poblacional</td><td>Población en 1 km (total para salud; 5–19 años para educación)</td><td>ln(P + 1) / ln(P<sub>máx</sub> + 1), con P<sub>máx</sub> = 15.000 (salud) o 4.000 (educación)</td></tr>
+<tr><td class="n">C6</td><td>Brecha de cobertura</td><td>Distancia al equipamiento existente más cercano; sin capa propia, distancia a zonas construidas</td><td>d / d<sub>máx</sub>, con d<sub>máx</sub> = 5 km (salud) o 2 km (educación)</td></tr>
+</tbody></table></div>
+<p class="cap">Todos los puntajes se acotan al intervalo [0, 1]. En C6, estar lejos de un equipamiento existente significa más necesidad y, por tanto, más aptitud para uno nuevo.</p>
+
+<h2 id="ahp">6. Ponderación con AHP</h2>
+<p>Los pesos se obtienen de una matriz de comparación pareada con la escala de Saaty (1 a 9), calculando el vector propio principal. La consistencia se verifica con el índice de consistencia y la razón de consistencia, que debe ser menor a 0,10. Se definió una matriz para cada tipo de equipamiento.</p>
+<div class="formula">IC = (λ<sub>máx</sub> − n) / (n − 1) &nbsp;&nbsp;·&nbsp;&nbsp; RC = IC / IA, con n = 6 e IA = 1,24</div>
+
+<h3>Matriz de salud</h3>
+<div class="tbl"><table>
+<thead><tr><th></th><th class="n">C1</th><th class="n">C2</th><th class="n">C3</th><th class="n">C4</th><th class="n">C5</th><th class="n">C6</th></tr></thead>
+<tbody>
+<tr><th>C1 Accesibilidad</th><td class="n">1</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">2</td><td class="n">1/2</td></tr>
+<tr><th>C2 Pendiente</th><td class="n">1/3</td><td class="n">1</td><td class="n">1/3</td><td class="n">2</td><td class="n">1/2</td><td class="n">1/4</td></tr>
+<tr><th>C3 Inundación</th><td class="n">1</td><td class="n">3</td><td class="n">1</td><td class="n">3</td><td class="n">2</td><td class="n">1</td></tr>
+<tr><th>C4 Uso del suelo</th><td class="n">1/4</td><td class="n">1/2</td><td class="n">1/3</td><td class="n">1</td><td class="n">1/3</td><td class="n">1/5</td></tr>
+<tr><th>C5 Población</th><td class="n">1/2</td><td class="n">2</td><td class="n">1/2</td><td class="n">3</td><td class="n">1</td><td class="n">1/2</td></tr>
+<tr><th>C6 Brecha</th><td class="n">2</td><td class="n">4</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">1</td></tr>
+</tbody></table></div>
+
+<h3>Matriz de educación</h3>
+<div class="tbl"><table>
+<thead><tr><th></th><th class="n">C1</th><th class="n">C2</th><th class="n">C3</th><th class="n">C4</th><th class="n">C5</th><th class="n">C6</th></tr></thead>
+<tbody>
+<tr><th>C1 Accesibilidad</th><td class="n">1</td><td class="n">2</td><td class="n">1/2</td><td class="n">2</td><td class="n">1/3</td><td class="n">1/3</td></tr>
+<tr><th>C2 Pendiente</th><td class="n">1/2</td><td class="n">1</td><td class="n">1/3</td><td class="n">1</td><td class="n">1/4</td><td class="n">1/4</td></tr>
+<tr><th>C3 Inundación</th><td class="n">2</td><td class="n">3</td><td class="n">1</td><td class="n">3</td><td class="n">1</td><td class="n">1</td></tr>
+<tr><th>C4 Uso del suelo</th><td class="n">1/2</td><td class="n">1</td><td class="n">1/3</td><td class="n">1</td><td class="n">1/4</td><td class="n">1/4</td></tr>
+<tr><th>C5 Población</th><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">4</td><td class="n">1</td><td class="n">1</td></tr>
+<tr><th>C6 Brecha</th><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">4</td><td class="n">1</td><td class="n">1</td></tr>
+</tbody></table></div>
+
+<h3>Pesos resultantes</h3>
+<div class="tbl"><table>
+<thead><tr><th>Criterio</th><th class="n">Salud AHP</th><th class="n">Salud Fuzzy</th><th class="n">Educación AHP</th><th class="n">Educación Fuzzy</th></tr></thead>
+<tbody>
+<tr><td>C1 Accesibilidad vial</td><td class="n">0,213</td><td class="n">0,214</td><td class="n">0,110</td><td class="n">0,116</td></tr>
+<tr><td>C2 Pendiente</td><td class="n">0,077</td><td class="n">0,082</td><td class="n">0,065</td><td class="n">0,069</td></tr>
+<tr><td>C3 Seguridad frente a inundación</td><td class="n">0,229</td><td class="n">0,219</td><td class="n">0,227</td><td class="n">0,222</td></tr>
+<tr><td>C4 Uso del suelo</td><td class="n">0,053</td><td class="n">0,056</td><td class="n">0,065</td><td class="n">0,069</td></tr>
+<tr><td>C5 Demanda poblacional</td><td class="n">0,134</td><td class="n">0,148</td><td class="n">0,267</td><td class="n">0,262</td></tr>
+<tr><td>C6 Brecha de cobertura</td><td class="n">0,294</td><td class="n">0,282</td><td class="n">0,267</td><td class="n">0,262</td></tr>
+<tr><th>λ<sub>máx</sub> · RC</th><td class="n" colspan="2">6,100 · <span class="ok">0,016</span></td><td class="n" colspan="2">6,041 · <span class="ok">0,007</span></td></tr>
+</tbody></table></div>
+<p>Ambas matrices son consistentes (RC &lt; 0,10). Para salud pesan más la brecha de cobertura, la seguridad frente a inundación y la accesibilidad, porque una IPS debe ser alcanzable y operar durante emergencias. Para educación pesan más la población en edad escolar y la brecha, porque las sedes deben estar cerca de los estudiantes.</p>
+<p><strong>Fuzzy AHP como análisis de sensibilidad.</strong> Cada juicio a se convierte en un número difuso triangular (a − 1, a, a + 1), acotado entre 1/9 y 9. Los pesos difusos se calculan con la media geométrica de Buckley y se desfuzzifican por centro de área. Los pesos difusos difieren en menos de 0,015 de los de AHP, lo que indica que el resultado es robusto frente a la imprecisión de los juicios. La aplicación incluye además un escenario de pesos iguales como control.</p>
+
+<h2 id="modelo">7. Modelo de aptitud y restricciones</h2>
+<div class="formula">Aptitud = 1 + 9 × Σ (w<sub>i</sub> × s<sub>i</sub>) &nbsp;&nbsp;→&nbsp;&nbsp; escala de 1 a 10</div>
+<p>Las restricciones excluyen del análisis las zonas donde no es viable construir, sin importar su puntaje. Todos los umbrales se pueden ajustar en la aplicación.</p>
+<div class="tbl"><table>
+<thead><tr><th>Restricción</th><th>Valor por defecto</th><th>Justificación</th></tr></thead>
+<tbody>
+<tr><td>Agua, humedal y manglar (WorldCover 80, 90, 95)</td><td>Excluido</td><td>No construible</td></tr>
+<tr><td>Ocurrencia de agua JRC</td><td class="n">&gt; 10 %</td><td>Zonas inundadas con frecuencia</td></tr>
+<tr><td>Pendiente</td><td class="n">&gt; 15°</td><td>Costo y riesgo de remoción en masa</td></tr>
+<tr><td>HAND</td><td class="n">&lt; 1 m</td><td>Llanura de inundación activa del Atrato</td></tr>
+<tr><td>Áreas protegidas (WDPA)</td><td>Excluido</td><td>Restricción legal</td></tr>
+</tbody></table></div>
+<p>Las clases de aptitud son:</p>
+<ul>
+  <li><span class="sw" style="background:var(--c5)"></span><strong>Muy alta:</strong> 8 o más</li>
+  <li><span class="sw" style="background:var(--c4)"></span><strong>Alta:</strong> de 6,5 a 8</li>
+  <li><span class="sw" style="background:var(--c3)"></span><strong>Media:</strong> de 5 a 6,5</li>
+  <li><span class="sw" style="background:var(--c2)"></span><strong>Baja:</strong> de 3 a 5</li>
+  <li><span class="sw" style="background:var(--c1)"></span><strong>Muy baja:</strong> menos de 3</li>
+  <li><span class="sw" style="background:var(--c0)"></span><strong>Restringido</strong></li>
+</ul>
+
+<h2 id="validacion">8. Sitios prioritarios y validación</h2>
+<p>Los sitios prioritarios se seleccionan entre los píxeles no restringidos con aptitud igual o superior al <strong>percentil 95</strong> del área de análisis. Esos píxeles se agrupan en polígonos con conectividad de ocho vecinos, se descartan los menores de <strong>1 hectárea</strong> y se eligen los <strong>cinco</strong> de mayor aptitud media. Para cada sitio se reportan:</p>
+<ul>
+  <li>la aptitud media y el área</li>
+  <li>las coordenadas</li>
+  <li>la población dentro del radio de cobertura</li>
+  <li>la distancia al equipamiento existente más cercano</li>
+  <li>la distancia al epicentro</li>
+</ul>
+<p>La validación compara la población cubierta antes y después de los nuevos sitios, con radios de cobertura de <strong>2 km para salud</strong> y <strong>1 km para educación</strong> (distancia caminable para estudiantes):</p>
+<div class="formula">Cobertura (%) = población a ≤ R de un equipamiento / población total del área × 100</div>
+<p>Sin las capas REPS o DUE, la aplicación reporta la población que quedaría a menos de R de los nuevos sitios y la población alejada de las zonas construidas, como aproximación de la brecha actual.</p>
+
+<h2 id="manual">9. Manual de uso</h2>
+<ol class="steps">
+  <li><strong>Revise la Fase 1.</strong> El panel indica qué capas encontró la aplicación (✅) y cuáles reemplazó por un respaldo (⚠️). Elija el área de análisis y, si es el casco urbano, el radio en kilómetros. Marque «Mostrar capas de insumos» para ver Sentinel-2, pendiente, HAND, cobertura y población.</li>
+  <li><strong>Elija el tipo de equipamiento</strong> en la Fase 2: salud o educación. El diagnóstico de cobertura aparece después de calcular.</li>
+  <li><strong>Elija los pesos</strong> en la Fase 3: AHP, Fuzzy AHP o pesos iguales. La tabla muestra los tres juegos de pesos y la razón de consistencia. Con «Ver matriz de comparación pareada» puede revisar los juicios.</li>
+  <li><strong>Ajuste las restricciones</strong> en «Restricciones avanzadas» si lo necesita: pendiente máxima, HAND mínimo, ocurrencia de agua y áreas protegidas.</li>
+  <li><strong>Presione «Calcular aptitud».</strong> El cálculo tarda entre 20 y 60 segundos. El mapa muestra la aptitud por clases, las restricciones, los equipamientos existentes y los sitios prioritarios (estrellas magenta). Con el control de capas puede ver cada criterio por separado.</li>
+  <li><strong>Revise la Fase 6.</strong> Encontrará el gráfico de área por clase, los cinco sitios con el botón «Ir» para acercarse a cada uno y la mejora de la cobertura.</li>
+  <li><strong>Use el inspector.</strong> Haga clic en cualquier punto del mapa para ver la aptitud y el puntaje de los seis criterios en ese lugar.</li>
+  <li><strong>Descargue los resultados</strong> en la Fase 5. El GeoTIFF incluye la aptitud, la clase y los seis criterios, en EPSG:32618. El GeoJSON contiene los sitios prioritarios con todos sus atributos.</li>
+  <li><strong>Copie el resumen</strong> desde «Resumen para informe», que reúne los parámetros, los pesos, la consistencia, las áreas por clase, los sitios y la cobertura.</li>
+</ol>
+<div class="note">Para comparar escenarios, cambie un solo parámetro a la vez (por ejemplo, AHP frente a Fuzzy AHP, o salud frente a educación), recalcule y compare la ubicación de los sitios prioritarios.</div>
+
+<h2 id="capas">10. Capas propias (opcionales)</h2>
+<p>Para usar datos oficiales en lugar de los respaldos, suba estas capas como assets del proyecto <code>geomatica-giovanny</code> y compártalas con «Anyone can read»:</p>
+<div class="tbl"><table>
+<thead><tr><th>Capa</th><th>Asset ID</th><th>Preparación en ArcGIS Pro</th></tr></thead>
+<tbody>
+<tr><td>Límite municipal</td><td><code>projects/geomatica-giovanny/assets/limite_quibdo</code></td><td>Shapefile exportado por la Fase 1 o el MGN del DANE</td></tr>
+<tr><td>Equipamientos de salud</td><td><code>projects/geomatica-giovanny/assets/equip_salud_quibdo</code></td><td>REPS → XY Table To Point → recortar a Quibdó → shapefile</td></tr>
+<tr><td>Sedes educativas</td><td><code>projects/geomatica-giovanny/assets/equip_educacion_quibdo</code></td><td>DUE → XY Table To Point → recortar a Quibdó → shapefile</td></tr>
+<tr><td>Vías</td><td><code>projects/geomatica-giovanny/assets/vias_quibdo</code></td><td>Capa Vías recortada a Quibdó → shapefile</td></tr>
+</tbody></table></div>
+
+<h2 id="limitaciones">11. Limitaciones</h2>
+<ul>
+  <li><strong>Resolución de los insumos globales.</strong> MERIT Hydro (90 m) y Oxford MAP (1 km) son gruesos para decisiones a nivel de predio. Los sitios deben verificarse en campo y con el catastro (capas U_TERRENO y R_TERRENO del IGAC).</li>
+  <li><strong>Población de 2020.</strong> WorldPop no refleja el desplazamiento posterior al sismo; se recomienda complementarla con el RUD por barrio cuando esté disponible.</li>
+  <li><strong>Cobertura no es norma de uso.</strong> WorldCover describe la cobertura física, no el uso permitido por el POT; la compatibilidad normativa debe revisarse con la zonificación municipal.</li>
+  <li><strong>Amenaza por inundación aproximada.</strong> HAND y JRC aproximan la amenaza por inundación, pero no reemplazan los estudios básicos de riesgo del POT (Decreto 1807 de 2014).</li>
+  <li><strong>Sin amenaza sísmica local.</strong> La amenaza sísmica no se incluye como criterio porque a escala municipal es casi uniforme; la norma NSR-10 rige el diseño de las estructuras.</li>
+</ul>
+
+<h2 id="referencias">12. Referencias</h2>
+<ul class="refs">
+  <li>Buckley, J. J. (1985). Fuzzy hierarchical analysis. <em>Fuzzy Sets and Systems, 17</em>(3), 233–247.</li>
+  <li>Gorelick, N., Hancher, M., Dixon, M., Ilyushchenko, S., Thau, D., y Moore, R. (2017). Google Earth Engine: Planetary-scale geospatial analysis for everyone. <em>Remote Sensing of Environment, 202</em>, 18–27.</li>
+  <li>Malczewski, J. (2006). GIS-based multicriteria decision analysis: a survey of the literature. <em>International Journal of Geographical Information Science, 20</em>(7), 703–726.</li>
+  <li>Pekel, J.-F., Cottam, A., Gorelick, N., y Belward, A. S. (2016). High-resolution mapping of global surface water and its long-term changes. <em>Nature, 540</em>, 418–422.</li>
+  <li>Saaty, T. L. (1980). <em>The Analytic Hierarchy Process</em>. McGraw-Hill.</li>
+  <li>Weiss, D. J., et al. (2018). A global map of travel time to cities to assess inequalities in accessibility in 2015. <em>Nature, 553</em>, 333–336.</li>
+  <li>Yamazaki, D., et al. (2019). MERIT Hydro: A high-resolution global hydrography map based on latest topography datasets. <em>Water Resources Research, 55</em>, 5053–5073.</li>
+  <li>Zanaga, D., et al. (2022). <em>ESA WorldCover 10 m 2021 v200</em>. Zenodo.</li>
+  <li>WorldPop (2020). <em>Global High Resolution Population Denominators Project</em>. University of Southampton.</li>
+  <li>Asocapitales (2026). <em>Informe consolidado terremoto, No. 25</em>, corte 14 de agosto de 2026.</li>
+</ul>
+
+<footer class="doc">
+  <p><strong>Cómo citar:</strong> Gómez Cabezas, G. A. (2026). <em>Localización óptima de equipamientos de salud y educación en Quibdó tras el sismo del 10-ago-2026</em> [Aplicación de Google Earth Engine y documento técnico]. Especialización en Sistemas de Información Geográfica, Universidad Antonio Nariño.</p>
+  <p><strong>Contacto:</strong> ggomez352@uan.edu.co</p>
+</footer>
+</article>
+</div>
+
+</body>
+</html>
